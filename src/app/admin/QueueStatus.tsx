@@ -59,6 +59,26 @@ export default function QueueStatus() {
         }
     };
 
+    const processAll = async () => {
+        if (!confirm('Alle wartenden Keywords jetzt verarbeiten? Das kann einige Minuten dauern.')) return;
+        setIsProcessing(true);
+        try {
+            const res = await fetch('/api/admin/queue/process-all', { method: 'POST' });
+            const data = await res.json();
+            if (res.ok) {
+                alert(`Fertig! ${data.processedCount} verarbeitet, ${data.failedCount} fehlgeschlagen.`);
+            } else {
+                alert('Fehler: ' + (data.error || 'Unbekannt'));
+            }
+            fetchStatus();
+        } catch (e) {
+            console.error(e);
+            alert('Netzwerkfehler beim Batch-Verarbeiten');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
     if (!status) return <div className="animate-pulse bg-slate-100 h-32 rounded-2xl border border-slate-200"></div>;
 
     const totalWaiting = status.waiting + status.delayed;
@@ -77,13 +97,22 @@ export default function QueueStatus() {
                 </h2>
                 <div className="flex gap-3">
                     {totalWaiting > 0 && (
-                        <button
-                            onClick={processNext}
-                            disabled={isProcessing}
-                            className="text-xs font-semibold bg-brand-50 text-brand-600 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition-colors border border-brand-200 disabled:opacity-50 flex items-center gap-2"
-                        >
-                            {isProcessing ? 'Verarbeite...' : '1x Abarbeiten'}
-                        </button>
+                        <>
+                            <button
+                                onClick={processNext}
+                                disabled={isProcessing}
+                                className="text-xs font-semibold bg-brand-50 text-brand-600 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition-colors border border-brand-200 disabled:opacity-50 flex items-center gap-2"
+                            >
+                                {isProcessing ? 'Verarbeite...' : '1x Abarbeiten'}
+                            </button>
+                            <button
+                                onClick={processAll}
+                                disabled={isProcessing}
+                                className="text-xs font-semibold bg-green-50 text-green-700 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors border border-green-200 disabled:opacity-50 flex items-center gap-2"
+                            >
+                                {isProcessing ? 'Läuft...' : `Alle (${totalWaiting}) Abarbeiten`}
+                            </button>
+                        </>
                     )}
                     {(totalWaiting > 0 || status.active > 0 || status.failed > 0) && (
                         <button

@@ -46,17 +46,44 @@ export default function PromptSettings() {
         }
     };
 
+    const handleReset = async () => {
+        if (!confirm('Prompts auf optimierte Standardwerte zurücksetzen? Deine aktuellen Anpassungen gehen verloren.')) return;
+        setSaveStatus('Setze zurück...');
+        try {
+            const res = await fetch('/api/admin/prompt/reset', { method: 'DELETE' });
+            if (res.ok) {
+                setSaveStatus('Zurückgesetzt! Lade neue Defaults...');
+                await fetchPrompts();
+                setSaveStatus('Optimierte Prompts geladen!');
+                setTimeout(() => setSaveStatus(''), 2000);
+            } else {
+                setSaveStatus('Reset fehlgeschlagen');
+            }
+        } catch (e) {
+            console.error('Failed to reset prompts', e);
+            setSaveStatus('Netzwerkfehler');
+        }
+    };
+
     if (isLoading) return <div className="animate-pulse bg-slate-100 h-64 rounded-2xl border border-slate-200"></div>;
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
             <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                 <h2 className="text-xl font-bold text-slate-900">System Prompts anpassen</h2>
-                {saveStatus && (
-                    <span className="text-sm font-medium text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
-                        {saveStatus}
-                    </span>
-                )}
+                <div className="flex items-center gap-3">
+                    {saveStatus && (
+                        <span className="text-sm font-medium text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
+                            {saveStatus}
+                        </span>
+                    )}
+                    <button
+                        onClick={handleReset}
+                        className="text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-1.5 rounded-lg transition-colors border border-amber-200"
+                    >
+                        Auf Defaults zurücksetzen
+                    </button>
+                </div>
             </div>
 
             <div className="space-y-8">
