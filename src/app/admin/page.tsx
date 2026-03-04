@@ -1,108 +1,74 @@
-'use client';
+import { Metadata } from 'next';
+import prisma from '@/lib/prisma';
+import AdminClient from './AdminClient';
 
-import { useState } from 'react';
+export const dynamic = 'force-dynamic';
 
-export default function AdminPage() {
-    const [keywords, setKeywords] = useState('');
-    const [status, setStatus] = useState<{ message: string; type: 'idle' | 'loading' | 'success' | 'error' }>({ message: '', type: 'idle' });
+export const metadata: Metadata = {
+    title: 'System Admin | kilowattly',
+    robots: {
+        index: false,
+        follow: false,
+    },
+};
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const lines = keywords.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-        if (lines.length === 0) {
-            setStatus({ message: 'Bitte gib mindestens ein Keyword ein.', type: 'error' });
-            return;
-        }
-
-        setStatus({ message: `Sende ${lines.length} Keyword(s) an die Pipeline...`, type: 'loading' });
-
-        let successCount = 0;
-        let failCount = 0;
-
-        for (const keyword of lines) {
-            try {
-                const res = await fetch('/api/ingest', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ keyword })
-                });
-
-                if (res.ok) {
-                    successCount++;
-                } else {
-                    failCount++;
-                }
-            } catch (error) {
-                failCount++;
-            }
-        }
-
-        setStatus({
-            message: `Fertig! ${successCount} erfolgreich in die Warteschlange gestellt${failCount > 0 ? `, ${failCount} fehlgeschlagen` : ''}.`,
-            type: successCount > 0 ? 'success' : 'error'
-        });
-
-        if (successCount > 0) {
-            setKeywords('');
-        }
-    };
+export default async function AdminPage() {
+    const calculators = await prisma.calculator.findMany({
+        orderBy: { createdAt: 'desc' },
+    });
 
     return (
         <main className="min-h-screen bg-slate-50 p-8 sm:p-20">
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-4xl mx-auto">
                 <div className="mb-10">
                     <h1 className="text-3xl font-bold text-slate-900 tracking-tight">System Admin</h1>
-                    <p className="text-slate-500 mt-2">Füge dem System neue Seiten über die automatisierte KI Pipeline hinzu.</p>
+                    <p className="text-slate-500 mt-2">Füge dem System neue Seiten über die automatisierte KI Pipeline hinzu oder verwalte bestehende Rechner.</p>
                 </div>
 
-                <div className="bg-white p-6 sm:p-10 rounded-2xl shadow-sm border border-slate-200">
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Left Column: Form */}
+                    <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 h-fit">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6">Neuen Rechner generieren</h2>
+                        <AdminClient />
+                    </div>
 
-                        <div>
-                            <label htmlFor="keywords" className="block text-sm font-semibold text-slate-700 mb-2">
-                                Keywords (Eines pro Zeile)
-                            </label>
-                            <textarea
-                                id="keywords"
-                                name="keywords"
-                                rows={10}
-                                value={keywords}
-                                onChange={(e) => setKeywords(e.target.value)}
-                                className="w-full p-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none font-mono text-sm resize-y"
-                                placeholder="Gartensauna&#10;Gaming PC&#10;Kühlschrank"
-                                disabled={status.type === 'loading'}
-                            />
-                            <p className="text-sm text-slate-500 mt-2">
-                                Jedes Keyword wird einzeln verarbeitet. Die KI sucht automatisch nach dem besten Gerät, generiert Logik, Mocks und SEO Texte.
-                            </p>
+                    {/* Right Column: Existing Calculators */}
+                    <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <h2 className="text-xl font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">
+                            Bereits erstellte Artikel ({calculators.length})
+                        </h2>
+
+                        <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                            {calculators.length === 0 ? (
+                                <p className="text-slate-500 text-sm italic py-4">Noch keine Artikel vorhanden.</p>
+                            ) : (
+                                <ul className="space-y-3">
+                                    {calculators.map(calc => (
+                                        <li key={calc.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                            <div className="flex justify-between items-start gap-4">
+                                                <div>
+                                                    <a href={`/rechner/${calc.slug}`} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-600 hover:text-brand-700 hover:underline">
+                                                        {calc.deviceName}
+                                                    </a>
+                                                    <p className="text-xs text-slate-500 mt-1">Keyword: {calc.keyword}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${calc.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                        {calc.status}
+                                                    </span>
+                                                    <p className="text-xs text-slate-400 mt-1">
+                                                        {new Date(calc.createdAt).toLocaleDateString('de-DE')}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
-
-                        {status.message && (
-                            <div className={`p-4 rounded-xl ${status.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' :
-                                    status.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' :
-                                        status.type === 'loading' ? 'bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-3' : ''
-                                }`}>
-                                {status.type === 'loading' && (
-                                    <svg className="w-5 h-5 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                )}
-                                {status.message}
-                            </div>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={status.type === 'loading'}
-                            className="bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-8 rounded-xl transition-colors self-start"
-                        >
-                            {status.type === 'loading' ? 'Verarbeite...' : 'Pipeline Starten'}
-                        </button>
-
-                    </form>
+                    </div>
                 </div>
+
             </div>
         </main>
     );
