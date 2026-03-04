@@ -1,9 +1,11 @@
 import OpenAI from 'openai';
-import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 
+// We fall back to the provided NVIDIA API key if no environment variable is found.
+// Note: We use the NVIDIA integrate base URL for standard OpenAI SDK compatibility.
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || 'dummy_key',
+    apiKey: process.env.OPENAI_API_KEY || "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",
+    baseURL: process.env.API_BASE_URL || "https://integrate.api.nvidia.com/v1",
 });
 
 const LogicSchema = z.object({
@@ -14,73 +16,62 @@ const LogicSchema = z.object({
 });
 
 export async function generateCalculatorLogic(keyword: string) {
-    // Mock response if OPENAI_API_KEY is not defined dummy_key meaning user has not provided key yet.
-    if (process.env.OPENAI_API_KEY === 'dummy_key' || !process.env.OPENAI_API_KEY) {
-        console.log('WARN: Using mock logic data because OPENAI_API_KEY is missing');
-        return {
-            device_name: keyword,
-            default_wattage: 1500,
-            average_daily_usage_hours: 2.5,
-            category: 'Generische Geräte'
-        };
-    }
-
-    // @ts-ignore
-    const response = await openai.beta.chat.completions.parse({
-        model: 'gpt-4o-mini',
+    console.log(`Requesting logic for ${keyword} using NVIDIA API/Kimi...`);
+    const response = await openai.chat.completions.create({
+        model: 'kimi-k2.5',
+        response_format: { type: 'json_object' },
         messages: [
             {
                 role: 'system',
-                content:
-                    'You are an expert energy consultant. For the given search keyword, extract the canonical device name (in German), its default wattage (in Watts), average daily usage in hours, and a broad category (e.g. "Heizen", "Haushalt").',
+                content: 'You are an expert energy consultant. For the given search keyword, extract the canonical device name (in German), its default wattage (in Watts), average daily usage in hours, and a broad category (e.g. "Heizen", "Haushalt"). Return ONLY a valid JSON object matching exactly this structure with no markdown wrapping: {"device_name": "string", "default_wattage": 100, "average_daily_usage_hours": 2.5, "category": "Haushalt"}'
             },
             {
                 role: 'user',
                 content: keyword,
             },
         ],
-        response_format: zodResponseFormat(LogicSchema, 'calculator_logic'),
     });
 
-    return response.choices[0].message.parsed;
+    const body = response.choices[0].message.content || '{}';
+    try {
+        return LogicSchema.parse(JSON.parse(body));
+    } catch (e) {
+        console.error("Failed to parse LLM Response correctly:", body);
+        throw new Error("Invalid format returned by LLM");
+    }
 }
 
 const ContentSchema = z.object({
-    seo_content: z.string().describe("A 500-1000 word HTML structured article optimized for long-tail search intent related to the keyword's power consumption. Use <h2>, <h3>, <p>, <ul> tags. Text must be in German."),
+    seo_content: z.string(),
     faqs: z.array(
         z.object({
             question: z.string(),
             answer: z.string(),
         })
-    ).describe('A list of 3 to 5 frequently asked questions and their answers related to the power consumption of this device. Text must be in German.'),
+    )
 });
 
 export async function generateSeoContent(keyword: string, deviceName: string) {
-    if (process.env.OPENAI_API_KEY === 'dummy_key' || !process.env.OPENAI_API_KEY) {
-        console.log('WARN: Using mock content data because OPENAI_API_KEY is missing');
-        return {
-            seo_content: `<h2>Verbrauch von ${deviceName}</h2><p>Dies ist ein generierter Beispieltext, da kein API Key hinterlegt wurde.</p>`,
-            faqs: [
-                { question: `Verbraucht ${deviceName} viel Strom?`, answer: "Das hängt von der Nutzung ab." }
-            ]
-        };
-    }
-
-    // @ts-ignore
-    const response = await openai.beta.chat.completions.parse({
-        model: 'gpt-4o-mini',
+    const response = await openai.chat.completions.create({
+        model: 'kimi-k2.5',
+        response_format: { type: 'json_object' },
         messages: [
             {
                 role: 'system',
-                content: `You are an expert SEO copywriter. Write detailed content and FAQs in German for calculating the power consumption of a "${deviceName}" (based on keyword: "${keyword}"). The content will be injected into a landing page. Return the result strictly matching the requested schema.`,
+                content: `You are an expert SEO copywriter. Write detailed content and FAQs in German for calculating the power consumption of a "${deviceName}" (based on keyword: "${keyword}"). The seo_content must be a 500-1000 word HTML string using <h2>, <h3>, <p>, <ul>. The faqs must be 3-5 questions and answers. Return ONLY a valid JSON object matching exactly this structure with no markdown wrappers: {"seo_content": "<h2>Title</h2><p>text...</p>", "faqs": [{"question": "Q1", "answer": "A1"}]}`
             },
             {
                 role: 'user',
                 content: `Generate SEO content and FAQs for: ${keyword}`,
             },
         ],
-        response_format: zodResponseFormat(ContentSchema, 'seo_content'),
     });
 
-    return response.choices[0].message.parsed;
+    const body = response.choices[0].message.content || '{}';
+    try {
+        return ContentSchema.parse(JSON.parse(body));
+    } catch (e) {
+        console.error("Failed to parse LLM Content Response:", body);
+        throw new Error("Invalid content format from LLM");
+    }
 }
