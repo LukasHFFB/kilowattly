@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  calculators Calculator[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Calculator {
+  id                        String   @id @default(cuid())
+  slug                      String   @unique
+  keyword                   String
+  deviceName                String
+  default_wattage           Int
+  average_daily_usage_hours Float
+  price_cents               Float    @default(35.0)
+  seo_content               String   // HTML or string
+  faqs                      String   // JSON string of FAQs
+  
+  categoryId                String?
+  category                  Category? @relation(fields: [categoryId], references: [id])
+  
+  status                    String   @default("DRAFT") // DRAFT, PUBLISHED
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
