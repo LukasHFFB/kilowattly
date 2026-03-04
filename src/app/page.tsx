@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { Calculator } from '@prisma/client';
-
+import prisma from '@/lib/prisma';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
@@ -23,7 +22,6 @@ export default async function Home() {
         </Link>
         <nav className="hidden sm:flex gap-6 text-sm font-semibold text-slate-600">
           <Link href="#" className="hover:text-brand-600 transition-colors">Kategorien</Link>
-          <Link href="#" className="hover:text-brand-600 transition-colors">Stromspartipps</Link>
           <Link href="#" className="hover:text-brand-600 transition-colors">Über uns</Link>
         </nav>
       </header>
@@ -83,10 +81,10 @@ export default async function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {popularCalculators.length === 0 ? (
               <div className="col-span-full border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center text-slate-500">
-                Es sind noch keine Rechner verfügbar. Fügen Sie Rechner über das Admin Backend hinzu.
+                Es sind noch keine Rechner verfügbar. Bitte fügen Sie via API neue Geräte hinzu.
               </div>
             ) : null}
-            {popularCalculators.map((calc: Calculator) => (
+            {popularCalculators.map((calc: any) => (
               <Link href={`/rechner/${calc.slug}`} key={calc.id} className="group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all flex flex-col h-full cursor-pointer">
                 <div className="bg-brand-50 w-14 h-14 rounded-xl flex items-center justify-center text-brand-600 mb-5 group-hover:scale-110 transition-transform">
                   <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -117,7 +115,7 @@ export default async function Home() {
             kilowattly.
           </div>
           <div>
-            &copy; 2024 Alle Rechte vorbehalten. Programmatic SEO Demo.
+            &copy; {new Date().getFullYear()} Alle Rechte vorbehalten. kilowattly.
           </div>
         </div>
       </footer>

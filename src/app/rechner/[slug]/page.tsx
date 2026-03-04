@@ -85,7 +85,7 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                         kilowattly.
                     </div>
                     <div>
-                        &copy; {new Date().getFullYear()} Alle Rechte vorbehalten. Programmatic SEO Demo.
+                        &copy; {new Date().getFullYear()} Alle Rechte vorbehalten. kilowattly.
                     </div>
                 </div>
             </footer>
