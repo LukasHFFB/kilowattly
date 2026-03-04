@@ -18,7 +18,7 @@ const LogicSchema = z.object({
 export async function generateCalculatorLogic(keyword: string) {
     console.log(`Requesting logic for ${keyword} using NVIDIA API/Kimi...`);
     const response = await openai.chat.completions.create({
-        model: 'kimi-k2.5',
+        model: 'moonshotai/kimi-k2.5',
         response_format: { type: 'json_object' },
         messages: [
             {
@@ -53,7 +53,7 @@ const ContentSchema = z.object({
 
 export async function generateSeoContent(keyword: string, deviceName: string) {
     const response = await openai.chat.completions.create({
-        model: 'kimi-k2.5',
+        model: 'moonshotai/kimi-k2.5',
         response_format: { type: 'json_object' },
         messages: [
             {
