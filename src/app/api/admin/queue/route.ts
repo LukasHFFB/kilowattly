@@ -19,3 +19,13 @@ export async function GET() {
         return NextResponse.json({ error: 'Failed to fetch queue status' }, { status: 500 });
     }
 }
+
+export async function DELETE() {
+    try {
+        await ingestQueue.obliterate({ force: true });
+        return NextResponse.json({ success: true, message: 'Warteschlange geleert' });
+    } catch (error) {
+        console.error('Error clearing queue:', error);
+        return NextResponse.json({ error: 'Failed to clear queue' }, { status: 500 });
+    }
+}

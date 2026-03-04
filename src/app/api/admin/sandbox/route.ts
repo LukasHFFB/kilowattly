@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { generateCalculatorLogic, generateSeoContent } from '@/lib/openai/generate';
 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
     try {
         const { keyword } = await req.json();
