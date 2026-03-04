@@ -7,10 +7,13 @@ const openai = new OpenAI({
 
 async function main() {
     try {
-        const res = await openai.models.list();
-        const models = res.data.map(m => m.id);
-        const moonshotModels = models.filter(m => m.includes('moonshot') || m.includes('kimi'));
-        console.log("Moonshot/Kimi models available:", moonshotModels);
+        console.log("Testing completion on moonshotai/kimi-k2.5 with max_tokens...");
+        const response = await openai.chat.completions.create({
+            model: 'moonshotai/kimi-k2.5',
+            messages: [{ role: 'user', content: 'Say hello in 5 words' }],
+            max_tokens: 100,
+        });
+        console.log("Response:", response.choices[0].message.content);
     } catch (e: any) {
         console.error("Error:", e.message);
     }
