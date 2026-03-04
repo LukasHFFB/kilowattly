@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { z } from 'zod';
+import prisma from '@/lib/prisma';
 
 // We fall back to the provided NVIDIA API key if no environment variable is found.
 // Note: We use the NVIDIA integrate base URL for standard OpenAI SDK compatibility.
@@ -17,13 +18,18 @@ const LogicSchema = z.object({
 
 export async function generateCalculatorLogic(keyword: string) {
     console.log(`Requesting logic for ${keyword} using NVIDIA API/Kimi...`);
+
+    // Fetch custom prompt or use default
+    const customPrompt = await prisma.systemPrompt.findUnique({ where: { id: 'LOGIC' } });
+    const systemInstruction = customPrompt?.template || 'You are an expert energy consultant. For the given search keyword, extract the canonical device name (in German), its default wattage (in Watts), average daily usage in hours, and a broad category (e.g. "Heizen", "Haushalt"). Return ONLY a valid JSON object matching exactly this structure with no markdown wrapping: {"device_name": "string", "default_wattage": 100, "average_daily_usage_hours": 2.5, "category": "Haushalt"}';
+
     const response = await openai.chat.completions.create({
         model: 'meta/llama-3.1-70b-instruct',
         response_format: { type: 'json_object' },
         messages: [
             {
                 role: 'system',
-                content: 'You are an expert energy consultant. For the given search keyword, extract the canonical device name (in German), its default wattage (in Watts), average daily usage in hours, and a broad category (e.g. "Heizen", "Haushalt"). Return ONLY a valid JSON object matching exactly this structure with no markdown wrapping: {"device_name": "string", "default_wattage": 100, "average_daily_usage_hours": 2.5, "category": "Haushalt"}'
+                content: systemInstruction
             },
             {
                 role: 'user',
@@ -52,13 +58,20 @@ const ContentSchema = z.object({
 });
 
 export async function generateSeoContent(keyword: string, deviceName: string) {
+    // Fetch custom prompt or use default
+    const customPrompt = await prisma.systemPrompt.findUnique({ where: { id: 'CONTENT' } });
+    let systemInstruction = customPrompt?.template || 'You are an expert SEO copywriter. Write detailed content and FAQs in German for calculating the power consumption of a "{{deviceName}}" (based on keyword: "{{keyword}}"). The seo_content must be a 500-1000 word HTML string using <h2>, <h3>, <p>, <ul>. The faqs must be 3-5 questions and answers. Return ONLY a valid JSON object matching exactly this structure with no markdown wrappers: {"seo_content": "<h2>Title</h2><p>text...</p>", "faqs": [{"question": "Q1", "answer": "A1"}]}';
+
+    // Replace dynamic {{variables}}
+    systemInstruction = systemInstruction.replace(/\{\{deviceName\}\}/g, deviceName).replace(/\{\{keyword\}\}/g, keyword);
+
     const response = await openai.chat.completions.create({
         model: 'meta/llama-3.1-70b-instruct',
         response_format: { type: 'json_object' },
         messages: [
             {
                 role: 'system',
-                content: `You are an expert SEO copywriter. Write detailed content and FAQs in German for calculating the power consumption of a "${deviceName}" (based on keyword: "${keyword}"). The seo_content must be a 500-1000 word HTML string using <h2>, <h3>, <p>, <ul>. The faqs must be 3-5 questions and answers. Return ONLY a valid JSON object matching exactly this structure with no markdown wrappers: {"seo_content": "<h2>Title</h2><p>text...</p>", "faqs": [{"question": "Q1", "answer": "A1"}]}`
+                content: systemInstruction
             },
             {
                 role: 'user',

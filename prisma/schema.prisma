@@ -33,3 +33,9 @@ model Calculator {
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
 }
+
+model SystemPrompt {
+  id        String   @id // "LOGIC" or "CONTENT"
+  template  String   // The text of the prompt
+  updatedAt DateTime @updatedAt
+}
