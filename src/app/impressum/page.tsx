@@ -15,6 +15,7 @@ export default function ImpressumPage() {
                     kilowattly<span className="text-brand-500">.</span>
                 </Link>
                 <nav className="hidden sm:flex gap-6 text-sm font-semibold text-slate-600">
+                    <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
                     <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
                     <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
                 </nav>
