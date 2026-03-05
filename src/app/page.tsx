@@ -5,11 +5,21 @@ import SearchBar from './SearchBar';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const popularCalculators = await prisma.calculator.findMany({
+  const allCalculators = await prisma.calculator.findMany({
     where: { status: 'PUBLISHED' },
-    orderBy: { createdAt: 'desc' },
-    take: 6,
+    orderBy: { slug: 'asc' }, // stable order for deterministic rotation
   });
+
+  // Daily rotation: use the current date as a seed so the selection
+  // changes each day but stays stable within the same day.
+  const today = new Date();
+  const daySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const total = allCalculators.length;
+  const offset = total > 0 ? daySeed % total : 0;
+  const popularCalculators = [];
+  for (let i = 0; i < Math.min(6, total); i++) {
+    popularCalculators.push(allCalculators[(offset + i) % total]);
+  }
 
   return (
     <>
@@ -22,7 +32,8 @@ export default async function Home() {
           kilowattly<span className="text-brand-500">.</span>
         </Link>
         <nav className="hidden sm:flex gap-6 text-sm font-semibold text-slate-600">
-          <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
+          <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
+          <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
         </nav>
       </header>
 
@@ -93,6 +104,8 @@ export default async function Home() {
           </div>
           <div className="flex gap-4">
             <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
+            <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
+            <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
             <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
           </div>
         </div>

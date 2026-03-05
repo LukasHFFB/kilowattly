@@ -20,6 +20,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 1.0,
         },
         {
+            url: `${BASE_URL}/alle-rechner`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.9,
+        },
+        {
+            url: `${BASE_URL}/ueber-uns`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.5,
+        },
+        {
             url: `${BASE_URL}/impressum`,
             lastModified: new Date(),
             changeFrequency: 'yearly',
@@ -28,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
 
     const calculatorPages: MetadataRoute.Sitemap = calculators.map((calc) => ({
-        url: `${BASE_URL}/rechner/${calc.slug}`,
+        url: `${BASE_URL}/rechner/${encodeURIComponent(calc.slug)}`,
         lastModified: calc.updatedAt,
         changeFrequency: 'weekly' as const,
         priority: 0.8,

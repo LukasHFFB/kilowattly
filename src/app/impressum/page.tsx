@@ -9,11 +9,15 @@ export const metadata: Metadata = {
 export default function ImpressumPage() {
     return (
         <>
-            <header className="max-w-4xl mx-auto px-6 py-8 w-full flex bg-transparent">
+            <header className="max-w-4xl mx-auto px-6 py-8 w-full flex justify-between items-center bg-transparent">
                 <Link href="/" className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2 hover:text-brand-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-500"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2A.5.5 0 0 1 14.9 3l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg>
                     kilowattly<span className="text-brand-500">.</span>
                 </Link>
+                <nav className="hidden sm:flex gap-6 text-sm font-semibold text-slate-600">
+                    <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
+                    <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
+                </nav>
             </header>
 
             <main className="max-w-4xl mx-auto px-6 pb-24 flex-grow w-full">
@@ -71,6 +75,8 @@ export default function ImpressumPage() {
                     </div>
                     <div className="flex gap-4">
                         <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
+                        <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
+                        <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
                         <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
                     </div>
                 </div>

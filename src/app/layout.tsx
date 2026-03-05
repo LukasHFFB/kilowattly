@@ -7,10 +7,13 @@ const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-  title: 'Stromverbrauch & Stromkosten berechnen für jedes Gerät | kilowattly',
-  description: 'Berechnen Sie exakt den Stromverbrauch und die jährlichen Stromkosten für über 1.000 Haushaltsgeräte. Kostenlos, sofort und ohne Anmeldung.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const year = new Date().getFullYear();
+  return {
+    title: `Stromverbrauch & Stromkosten berechnen (${year}) — 1.000+ Geräte | kilowattly`,
+    description: `Was kostet Ihr Gerät an Strom? ⚡ Berechnen Sie exakt den Stromverbrauch und die Stromkosten pro Tag, Monat & Jahr — kostenlos, sofort und ohne Anmeldung.`,
+  };
+}
 
 export default function RootLayout({
   children,

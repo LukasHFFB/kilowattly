@@ -11,9 +11,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     const calculator = await prisma.calculator.findUnique({ where: { slug } });
     if (!calculator) return {};
 
+    const year = new Date().getFullYear();
+    const device = calculator.deviceName;
+    const watt = calculator.default_wattage;
+
     return {
-        title: `${calculator.deviceName} Stromverbrauch & Stromkosten berechnen | kilowattly`,
-        description: `Berechnen Sie exakt den Stromverbrauch und die jährlichen Stromkosten Ihres ${calculator.deviceName}. Inklusive Spartipps und häufiger Fragen.`,
+        title: `${device}: Stromverbrauch & Stromkosten berechnen (${year}) | kilowattly`,
+        description: `Was kostet ein ${device} an Strom? ⚡ Bei ${watt} Watt berechnen Sie hier exakt die Stromkosten pro Tag, Monat & Jahr. Kostenloser Rechner mit Spartipps.`,
     };
 }
 
@@ -27,16 +31,28 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
         faqs = JSON.parse(calculator.faqs);
     } catch (e) { }
 
-    // Fetch a few other calculators for internal linking
-    const relatedCalculators = await prisma.calculator.findMany({
+    // Fetch ALL other published calculators for fair internal linking
+    const allOtherCalculators = await prisma.calculator.findMany({
         where: {
             status: 'PUBLISHED',
             slug: { not: slug },
         },
         select: { slug: true, deviceName: true, default_wattage: true },
-        take: 4,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { slug: 'asc' }, // stable order for deterministic rotation
     });
+
+    // Deterministic rotation: hash the current slug to pick an offset,
+    // so each page shows a different set of 4 calculators.
+    let hash = 0;
+    for (let i = 0; i < slug.length; i++) {
+        hash = ((hash << 5) - hash + slug.charCodeAt(i)) | 0;
+    }
+    const total = allOtherCalculators.length;
+    const offset = total > 0 ? ((hash % total) + total) % total : 0;
+    const relatedCalculators = [];
+    for (let i = 0; i < Math.min(4, total); i++) {
+        relatedCalculators.push(allOtherCalculators[(offset + i) % total]);
+    }
 
     // JSON-LD BreadcrumbList for schema.org structured data
     const breadcrumbJsonLd = {
@@ -72,7 +88,8 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                     kilowattly<span className="text-brand-500">.</span>
                 </Link>
                 <nav className="hidden sm:flex gap-6 text-sm font-semibold text-slate-600">
-                    <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
+                    <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
+                    <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
                 </nav>
             </header>
 
@@ -162,6 +179,8 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                     </div>
                     <div className="flex gap-4">
                         <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
+                        <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
+                        <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
                         <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { ingestQueue } from '@/lib/queue/queue';
 import { generateCalculatorLogic, generateSeoContent } from '@/lib/openai/generate';
 import prisma from '@/lib/prisma';
+import { slugify } from '@/lib/slugify';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
@@ -32,7 +33,7 @@ export async function POST() {
             create: { name: logic.category },
         });
 
-        const slug = logic.device_name.toLowerCase().replace(/[^a-z0-9äöüß]+/g, '-').replace(/(^-|-$)+/g, '');
+        const slug = slugify(logic.device_name);
 
         await prisma.calculator.upsert({
             where: { slug },
