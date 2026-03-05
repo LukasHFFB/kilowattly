@@ -26,23 +26,22 @@ export default function ImpressumPage() {
                 <div className="bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm prose prose-slate max-w-none">
                     <h2>Angaben gemäß § 5 TMG</h2>
                     <p>
-                        <strong>[Ihr Name / Firmenname]</strong><br />
-                        [Straße und Hausnummer]<br />
-                        [PLZ Ort]<br />
-                        Deutschland
+                        <strong>Lukas Hoffbauer</strong><br />
+                        Aboulevard 59B<br />
+                        1960 Frederiksberg C<br />
+                        Dänemark
                     </p>
 
                     <h2>Kontakt</h2>
                     <p>
-                        E-Mail: <a href="mailto:kontakt@kilowattly.de">kontakt@kilowattly.de</a><br />
-                        Telefon: [Ihre Telefonnummer]
+                        E-Mail: <a href="mailto:info@kilowattly.de">info@kilowattly.de</a>
                     </p>
 
                     <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
                     <p>
-                        <strong>[Ihr Name]</strong><br />
-                        [Straße und Hausnummer]<br />
-                        [PLZ Ort]
+                        <strong>Lukas Hoffbauer</strong><br />
+                        Aboulevard 59B<br />
+                        1960 Frederiksberg C
                     </p>
 
                     <h2>Haftungsausschluss</h2>
