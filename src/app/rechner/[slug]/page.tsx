@@ -15,13 +15,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     const device = calculator.deviceName;
     const watt = calculator.default_wattage;
 
-    // Compute approximate annual figures for the meta description
-    const annualKwh = Math.round((watt * calculator.average_daily_usage_hours * 365) / 1000);
-    const annualCostEur = ((annualKwh * calculator.price_cents) / 100).toFixed(0);
-
     return {
         title: `${device}: Stromverbrauch & Stromkosten berechnen (${year}) | kilowattly`,
-        description: `${device} Stromkosten pro Jahr: ca. ${annualCostEur} € bei ${annualKwh} kWh Jahresverbrauch. ⚡ Berechnen Sie exakt die Stromkosten pro Monat & Jahr — kostenloser Rechner mit Spartipps.`,
+        description: `Was kostet ein ${device} (${watt} W) an Strom pro Monat & Jahr? ⚡ Berechnen Sie jetzt Stromkosten, kWh-Jahresverbrauch & Sparpotenzial — kostenloser Rechner mit Spartipps.`,
     };
 }
 
