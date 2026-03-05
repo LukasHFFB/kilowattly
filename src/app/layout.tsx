@@ -8,8 +8,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Stromkosten berechnen für jedes Gerät - kilowattly',
-  description: 'Finde den exakten Stromverbrauch und die Kosten.',
+  title: 'Stromverbrauch & Stromkosten berechnen für jedes Gerät | kilowattly',
+  description: 'Berechnen Sie exakt den Stromverbrauch und die jährlichen Stromkosten für über 1.000 Haushaltsgeräte. Kostenlos, sofort und ohne Anmeldung.',
 };
 
 export default function RootLayout({

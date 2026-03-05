@@ -12,8 +12,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     if (!calculator) return {};
 
     return {
-        title: `Stromverbrauch ${calculator.deviceName} Berechnen - kilowattly`,
-        description: `Kalkuliere exakt den Stromverbrauch und die Kosten deines ${calculator.deviceName}.`,
+        title: `${calculator.deviceName} Stromverbrauch & Stromkosten berechnen | kilowattly`,
+        description: `Berechnen Sie exakt den Stromverbrauch und die jährlichen Stromkosten Ihres ${calculator.deviceName}. Inklusive Spartipps und häufiger Fragen.`,
     };
 }
 
@@ -27,25 +27,74 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
         faqs = JSON.parse(calculator.faqs);
     } catch (e) { }
 
+    // Fetch a few other calculators for internal linking
+    const relatedCalculators = await prisma.calculator.findMany({
+        where: {
+            status: 'PUBLISHED',
+            slug: { not: slug },
+        },
+        select: { slug: true, deviceName: true, default_wattage: true },
+        take: 4,
+        orderBy: { createdAt: 'desc' },
+    });
+
+    // JSON-LD BreadcrumbList for schema.org structured data
+    const breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Startseite',
+                item: 'https://www.kilowattly.de',
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: `${calculator.deviceName} Stromkosten`,
+                item: `https://www.kilowattly.de/rechner/${slug}`,
+            },
+        ],
+    };
+
     return (
         <>
-            <header className="max-w-4xl mx-auto px-6 py-8 w-full flex bg-transparent">
+            {/* JSON-LD Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+            />
+
+            <header className="max-w-4xl mx-auto px-6 py-8 w-full flex justify-between items-center bg-transparent">
                 <Link href="/" className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2 hover:text-brand-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-500"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2A.5.5 0 0 1 14.9 3l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg>
                     kilowattly<span className="text-brand-500">.</span>
                 </Link>
+                <nav className="hidden sm:flex gap-6 text-sm font-semibold text-slate-600">
+                    <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
+                </nav>
             </header>
 
             <main className="max-w-4xl mx-auto px-6 pb-24 flex-grow w-full">
+
+                {/* Breadcrumb Navigation */}
+                <nav className="mb-6 text-sm text-slate-500" aria-label="Breadcrumb">
+                    <ol className="flex items-center gap-1.5">
+                        <li><Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link></li>
+                        <li className="text-slate-300">/</li>
+                        <li className="text-slate-800 font-medium">{calculator.deviceName} Stromkosten</li>
+                    </ol>
+                </nav>
 
                 <section className="mb-10 text-center sm:text-left relative">
                     <div className="absolute -top-10 -left-10 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                     <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 relative z-10">
-                        Stromverbrauch <span className="text-brand-600">{calculator.deviceName}</span>
+                        Stromverbrauch &amp; Stromkosten <span className="text-brand-600">{calculator.deviceName}</span> berechnen
                     </h1>
                     <p className="text-lg text-slate-600 max-w-2xl leading-relaxed relative z-10">
-                        Ermitteln Sie präzise den Energiebedarf und die laufenden Kosten. Passen Sie die Werte an die Spezifikationen für Ihr {calculator.deviceName} an.
+                        Ermitteln Sie präzise den Energiebedarf und die laufenden Stromkosten für Ihr {calculator.deviceName}. Passen Sie Wattzahl und Nutzungsdauer individuell an.
                     </p>
                 </section>
 
@@ -64,14 +113,41 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                 </section>
 
                 {faqs.length > 0 && (
-                    <section>
+                    <section className="mb-16">
                         <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                             <svg className="w-6 h-6 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            Häufige Fragen (FAQ)
+                            Häufige Fragen zum Stromverbrauch
                         </h2>
                         <div className="space-y-4">
                             {faqs.map((faq: any, idx: number) => (
                                 <FaqWidget key={idx} question={faq.question} answer={faq.answer} />
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Internal Linking: Related Calculators */}
+                {relatedCalculators.length > 0 && (
+                    <section>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                            <svg className="w-6 h-6 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            Weitere Stromkostenrechner
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {relatedCalculators.map((rc) => (
+                                <Link
+                                    key={rc.slug}
+                                    href={`/rechner/${rc.slug}`}
+                                    className="group bg-white rounded-xl p-5 border border-slate-200 hover:border-brand-300 hover:shadow-md transition-all flex items-center justify-between"
+                                >
+                                    <div>
+                                        <span className="font-semibold text-slate-900 group-hover:text-brand-600 transition-colors">{rc.deviceName}</span>
+                                        <span className="text-slate-400 text-sm ml-2">({rc.default_wattage} W)</span>
+                                    </div>
+                                    <svg className="w-5 h-5 text-slate-300 group-hover:text-brand-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </Link>
                             ))}
                         </div>
                     </section>
@@ -82,10 +158,11 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
             <footer className="border-t border-slate-200 bg-white py-10 mt-12 w-full">
                 <div className="max-w-4xl mx-auto px-6 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500">
                     <div className="font-bold text-slate-800 mb-2 sm:mb-0">
-                        kilowattly.
+                        <Link href="/" className="hover:text-brand-600 transition-colors">kilowattly.</Link>
                     </div>
-                    <div>
-                        &copy; {new Date().getFullYear()} Alle Rechte vorbehalten. kilowattly.
+                    <div className="flex gap-4">
+                        <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
+                        <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
                     </div>
                 </div>
             </footer>

@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
+import SearchBar from './SearchBar';
+
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
@@ -20,8 +22,7 @@ export default async function Home() {
           kilowattly<span className="text-brand-500">.</span>
         </Link>
         <nav className="hidden sm:flex gap-6 text-sm font-semibold text-slate-600">
-          <Link href="#" className="hover:text-brand-600 transition-colors">Kategorien</Link>
-          <Link href="#" className="hover:text-brand-600 transition-colors">Über uns</Link>
+          <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
         </nav>
       </header>
 
@@ -34,28 +35,14 @@ export default async function Home() {
 
           <div className="relative z-10 max-w-3xl mx-auto">
             <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
-              Was kostet dein <span className="text-brand-600">Strom?</span>
+              <span className="text-brand-600">Stromkosten</span> &amp; Stromverbrauch berechnen
             </h1>
             <p className="text-xl text-slate-600 mb-10 leading-relaxed">
-              Finde den exakten Stromverbrauch und die Kosten für über 1.000 Geräte im Haushalt, Garten und Büro.
+              Für über 1.000 Haushaltsgeräte — exakt, kostenlos, sofort. Finde den genauen Stromverbrauch und die jährlichen Stromkosten für jedes Gerät.
             </p>
 
-            {/* Big Search Bar */}
-            <form className="relative group max-w-2xl mx-auto" action="#">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                <svg className="w-6 h-6 text-slate-400 group-focus-within:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
-              <input type="text"
-                name="q"
-                className="block w-full pl-14 pr-32 py-5 sm:py-6 bg-white border-2 border-slate-200 rounded-2xl text-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all"
-                placeholder="Z.B. Gartensauna, Gaming PC, Kühlschrank..."
-                required />
-              <button type="submit" className="absolute right-2.5 bottom-2.5 top-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl px-6 transition-colors shadow-sm">
-                Suchen
-              </button>
-            </form>
+            {/* Search Bar (Client Component) */}
+            <SearchBar />
 
             {/* Trending Tags */}
             <div className="mt-6 flex flex-wrap justify-center gap-2 text-sm">
@@ -74,35 +61,26 @@ export default async function Home() {
             <svg className="w-6 h-6 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
-            Beliebte Stromrechner
+            Beliebte Stromkostenrechner
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {popularCalculators.length === 0 ? (
               <div className="col-span-full border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center text-slate-500">
-                Es sind noch keine Rechner verfügbar. Bitte fügen Sie via API neue Geräte hinzu.
+                Es sind noch keine Rechner verfügbar. Bitte fügen Sie via Admin-Dashboard neue Geräte hinzu.
               </div>
             ) : null}
             {popularCalculators.map((calc: any) => (
               <Link href={`/rechner/${calc.slug}`} key={calc.id} className="group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all flex flex-col h-full cursor-pointer">
                 <div className="bg-brand-50 w-14 h-14 rounded-xl flex items-center justify-center text-brand-600 mb-5 group-hover:scale-110 transition-transform">
                   <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                   </svg>
                 </div>
                 <h3 className="font-bold text-lg text-slate-900 mb-2 group-hover:text-brand-600 transition-colors">{calc.deviceName}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed mt-auto">Kalkulieren Sie den Strombedarf bei ca. {calc.default_wattage} Watt.</p>
+                <p className="text-slate-500 text-sm leading-relaxed mt-auto">Stromverbrauch & Stromkosten berechnen bei ca. {calc.default_wattage} Watt.</p>
               </Link>
             ))}
-          </div>
-
-          <div className="mt-10 text-center">
-            <Link href="/kategorien" className="inline-flex items-center gap-2 text-brand-600 font-bold hover:text-brand-700 transition-colors">
-              Alle Kategorien durchsuchen
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-              </svg>
-            </Link>
           </div>
         </section>
 
@@ -111,10 +89,11 @@ export default async function Home() {
       <footer className="border-t border-slate-200 bg-white py-10 mt-auto">
         <div className="max-w-5xl mx-auto px-6 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500">
           <div className="font-bold text-slate-800 mb-2 sm:mb-0">
-            kilowattly.
+            <Link href="/" className="hover:text-brand-600 transition-colors">kilowattly.</Link>
           </div>
-          <div>
-            &copy; {new Date().getFullYear()} Alle Rechte vorbehalten. kilowattly.
+          <div className="flex gap-4">
+            <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
+            <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
           </div>
         </div>
       </footer>
