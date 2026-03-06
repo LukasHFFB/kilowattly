@@ -112,7 +112,7 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                         Stromverbrauch &amp; Stromkosten <span className="text-brand-600">{calculator.deviceName}</span> berechnen
                     </h1>
                     <p className="text-lg text-slate-600 max-w-2xl leading-relaxed relative z-10">
-                        Ermitteln Sie präzise den Energiebedarf und die laufenden Stromkosten für Ihr {calculator.deviceName}. Passen Sie Wattzahl und Nutzungsdauer individuell an.
+                        Ermitteln Sie präzise den Energiebedarf und die laufenden Stromkosten beim {calculator.deviceName}. Passen Sie Wattzahl und Nutzungsdauer individuell an.
                     </p>
                 </section>
 

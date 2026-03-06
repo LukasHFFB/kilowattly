@@ -135,7 +135,7 @@ export default function CalculatorWidget({ defaultWattage, defaultHours, default
                             <tr className="hover:bg-slate-50/50 transition-colors">
                                 <td className="px-6 py-4 font-medium text-slate-900">Leistung</td>
                                 <td className="px-6 py-4"><span className="bg-brand-50 text-brand-600 font-bold px-2 py-1 rounded-md">{defaultWattage} W</span></td>
-                                <td className="px-6 py-4">Durchschnittswert für ein handelsübliches {deviceName}</td>
+                                <td className="px-6 py-4">Durchschnittswert für handelsübliche Modelle ({deviceName})</td>
                             </tr>
                             <tr className="hover:bg-slate-50/50 transition-colors">
                                 <td className="px-6 py-4 font-medium text-slate-900">Nutzung/Tag</td>
