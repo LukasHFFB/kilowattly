@@ -39,7 +39,7 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
             status: 'PUBLISHED',
             slug: { not: slug },
         },
-        select: { slug: true, deviceName: true, default_wattage: true },
+        select: { slug: true, deviceName: true, default_wattage: true, average_daily_usage_hours: true, price_cents: true },
         orderBy: { slug: 'asc' }, // stable order for deterministic rotation
     });
 
@@ -55,6 +55,27 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
     for (let i = 0; i < Math.min(4, total); i++) {
         relatedCalculators.push(allOtherCalculators[(offset + i) % total]);
     }
+
+    // Build comparison chart data from real DB values:
+    // Try to find well-known household devices first, fill with others if needed
+    const WELL_KNOWN = ['Kühlschrank', 'Waschmaschine', 'Fernseher', 'Staubsauger', 'WLAN-Router', 'Geschirrspüler'];
+    const computeAnnualCost = (c: { default_wattage: number; average_daily_usage_hours: number; price_cents: number }) =>
+        Math.round((c.default_wattage * c.average_daily_usage_hours * 365) / 1000 * (c.price_cents / 100));
+
+    const currentAnnualCost = computeAnnualCost(calculator);
+
+    // Pick well-known ones first, then fill from the rest
+    const wellKnownMatches = allOtherCalculators.filter((c) =>
+        WELL_KNOWN.some((name) => c.deviceName.toLowerCase().includes(name.toLowerCase()))
+    );
+    const otherCalcs = allOtherCalculators.filter((c) =>
+        !WELL_KNOWN.some((name) => c.deviceName.toLowerCase().includes(name.toLowerCase()))
+    );
+    const comparisonPool = [...wellKnownMatches, ...otherCalcs];
+    const comparisonDevices = comparisonPool.slice(0, 3).map((c) => ({
+        name: c.deviceName,
+        annualCost: computeAnnualCost(c),
+    }));
 
     // JSON-LD BreadcrumbList for schema.org structured data
     const breadcrumbJsonLd = {
@@ -135,9 +156,8 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                         <p className="text-sm text-slate-500 mb-5">Jährliche Stromkosten im Vergleich zu gängigen Haushaltsgeräten</p>
                         <CostComparisonChart
                             deviceName={calculator.deviceName}
-                            watt={calculator.default_wattage}
-                            hoursPerDay={calculator.average_daily_usage_hours}
-                            priceCents={calculator.price_cents}
+                            annualCost={currentAnnualCost}
+                            comparisons={comparisonDevices}
                         />
                     </section>
 
