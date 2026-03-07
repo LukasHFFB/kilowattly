@@ -52,8 +52,18 @@ export default async function Home() {
           {/* Decorative Blue Gradient Blobs */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/4 w-[500px] h-[500px] bg-brand-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-          <div className="relative z-20 max-w-3xl mx-auto">
-            <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 pt-16">
+
+            {/* Call to Action for Hero Product */}
+            <div className="flex justify-center mb-8">
+              <Link href="/virtueller-stromzaehler" className="group inline-flex items-center gap-2 px-5 py-2.5 bg-white/80 backdrop-blur-md border border-brand-200 hover:border-brand-500 rounded-full shadow-sm hover:shadow-md transition-all">
+                <span className="flex h-2.5 w-2.5 rounded-full bg-brand-500 animate-pulse"></span>
+                <span className="text-sm font-bold text-slate-800">Neu: Der virtuelle Stromzähler</span>
+                <svg className="w-4 h-4 text-brand-500 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+              </Link>
+            </div>
+
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-6 drop-shadow-sm">
               <span className="text-brand-600">Stromkosten</span> &amp; Stromverbrauch berechnen
             </h1>
             <p className="text-xl text-slate-600 mb-10 leading-relaxed">
