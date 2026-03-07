@@ -66,13 +66,15 @@ export async function GET(request: Request) {
                         </div>
                         <div
                             style={{
+                                display: 'flex',
                                 color: '#1e293b',
                                 fontSize: 42,
                                 fontWeight: 800,
                                 letterSpacing: '-0.02em',
                             }}
                         >
-                            Stromkosten <span style={{ color: '#2563eb', marginLeft: 12 }}>{name}</span>
+                            <div>Stromkosten</div>
+                            <div style={{ color: '#2563eb', marginLeft: 12 }}>{name}</div>
                         </div>
                     </div>
 
@@ -124,7 +126,7 @@ export async function GET(request: Request) {
                                                 display: 'flex',
                                             }}
                                         >
-                                            {item.cost} €
+                                            {item.cost + ' €'}
                                         </div>
                                     </div>
                                 </div>
