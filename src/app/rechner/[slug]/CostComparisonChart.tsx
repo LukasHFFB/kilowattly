@@ -50,10 +50,30 @@ export default function CostComparisonChart({ deviceName, annualCost, comparison
                     <YAxis
                         type="category"
                         dataKey="name"
-                        width={130}
+                        width={180}
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#1e293b', fontSize: 13, fontWeight: 600 }}
+                        tick={({ x, y, payload }: any) => {
+                            const name: string = payload.value;
+                            // Split long names into two lines
+                            if (name.length > 16) {
+                                const mid = name.lastIndexOf(' ', 16);
+                                const splitAt = mid > 0 ? mid : 16;
+                                const line1 = name.slice(0, splitAt);
+                                const line2 = name.slice(splitAt).trimStart();
+                                return (
+                                    <text x={x} y={y} textAnchor="end" fill="#1e293b" fontSize={13} fontWeight={600}>
+                                        <tspan x={x} dy="-0.4em">{line1}</tspan>
+                                        <tspan x={x} dy="1.2em">{line2}</tspan>
+                                    </text>
+                                );
+                            }
+                            return (
+                                <text x={x} y={y} textAnchor="end" fill="#1e293b" fontSize={13} fontWeight={600} dy="0.35em">
+                                    {name}
+                                </text>
+                            );
+                        }}
                     />
                     <Tooltip
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
