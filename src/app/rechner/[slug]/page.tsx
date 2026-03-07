@@ -4,7 +4,9 @@ import Link from 'next/link';
 import FaqWidget from './FaqWidget';
 import CalculatorSection from './CalculatorSection';
 import ShareInfographic from './ShareInfographic';
+import RatingWidget from './RatingWidget';
 import { getGlobalElectricityPrice, getElectricityPriceUpdateDate } from '@/lib/pricing';
+import { getSeedRating, getCombinedRating } from '@/lib/rating';
 
 export const dynamic = 'force-dynamic';
 
@@ -71,6 +73,15 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
     try {
         faqs = JSON.parse(calculator.faqs);
     } catch (e) { }
+
+    // Rating Logic: Blend deterministic seed with real PostgreSQL human votes
+    const seedMeta = getSeedRating(slug);
+    const combinedRating = getCombinedRating(
+        seedMeta.rating,
+        seedMeta.count,
+        calculator.realRatingSum,
+        calculator.realRatingCount
+    );
 
     // Fetch ALL other published calculators for fair internal linking
     const allOtherCalculators = await prisma.calculator.findMany({
@@ -155,6 +166,22 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
         })),
     } : null;
 
+    // JSON-LD SoftwareApplication for AggregateRating Stars
+    const softwareJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: `${calculator.deviceName} Rechner`,
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Web',
+        aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: combinedRating.average,
+            ratingCount: combinedRating.totalCount,
+            bestRating: '5',
+            worstRating: '1',
+        },
+    };
+
     return (
         <>
             {/* JSON-LD Structured Data */}
@@ -168,6 +195,10 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
                 />
             )}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
+            />
 
             <header className="max-w-4xl mx-auto px-6 py-8 w-full flex justify-between items-center bg-transparent">
                 <Link href="/" className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2 hover:text-brand-600 transition-colors">
@@ -235,6 +266,12 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
                         </div>
                     </section>
                 )}
+
+                <RatingWidget
+                    slug={slug}
+                    initialAverage={combinedRating.average}
+                    initialCount={combinedRating.totalCount}
+                />
 
                 <ShareInfographic
                     ogUrl={ogUrl}

@@ -23,10 +23,15 @@ model Calculator {
   average_daily_usage_hours Float
   price_cents               Float    @default(35.0)
   seo_content               String   // HTML or string
-  faqs                      String   // JSON string of FAQs
   
   categoryId                String?
   category                  Category? @relation(fields: [categoryId], references: [id])
+  
+  faqs                      String   // JSON string of FAQs
+
+  // Real User Ratings
+  realRatingSum           Int      @default(0)
+  realRatingCount         Int      @default(0)
   
   status                    String   @default("DRAFT") // DRAFT, PUBLISHED
   
