@@ -61,7 +61,17 @@ export async function GET(request: Request) {
                 >
                     {/* Header */}
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
-                        <div style={{ display: 'flex', color: '#2563eb', fontWeight: 800, fontSize: 32, marginRight: 24 }}>
+                        <div style={{
+                            display: 'flex',
+                            color: '#ffffff',
+                            backgroundColor: '#2563eb',
+                            padding: '8px 24px',
+                            borderRadius: '16px',
+                            fontWeight: 900,
+                            fontSize: 48,
+                            marginRight: 32,
+                            letterSpacing: '-1px'
+                        }}>
                             kilowattly.
                         </div>
                         <div
