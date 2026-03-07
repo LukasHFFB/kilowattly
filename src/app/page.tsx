@@ -41,6 +41,7 @@ export default async function Home() {
         <nav className="hidden sm:flex gap-6 text-sm font-semibold text-slate-600">
           <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
           <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
+          <Link href="/virtueller-stromzaehler" className="hover:text-brand-600 transition-colors">Virtueller Stromzähler</Link>
           <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
         </nav>
       </header>
@@ -53,15 +54,6 @@ export default async function Home() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/4 w-[500px] h-[500px] bg-brand-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
           <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 pt-16">
-
-            {/* Call to Action for Hero Product */}
-            <div className="flex justify-center mb-8">
-              <Link href="/virtueller-stromzaehler" className="group inline-flex items-center gap-2 px-5 py-2.5 bg-white/80 backdrop-blur-md border border-brand-200 hover:border-brand-500 rounded-full shadow-sm hover:shadow-md transition-all">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-brand-500 animate-pulse"></span>
-                <span className="text-sm font-bold text-slate-800">Neu: Der virtuelle Stromzähler</span>
-                <svg className="w-4 h-4 text-brand-500 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
-              </Link>
-            </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-6 drop-shadow-sm">
               <span className="text-brand-600">Stromkosten</span> &amp; Stromverbrauch berechnen
@@ -122,6 +114,27 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* HERO PRODUCT: VIRTUELLE STROMZÄHLER */}
+        <section className="mt-20 relative bg-brand-50 rounded-3xl p-8 sm:p-12 border border-brand-100 overflow-hidden shadow-sm">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <svg className="w-64 h-64" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </div>
+          <div className="relative z-10 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-brand-200">
+              <span className="flex h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
+              Neu
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">Der virtuelle <span className="text-brand-600">Stromzähler</span></h2>
+            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+              Bauen Sie Ihren Haushalt digital nach. Fügen Sie Ihre Geräte hinzu, passen Sie Laufzeiten an und finden Sie sofort heraus, wo die <strong className="text-slate-800">versteckten Stromfresser</strong> lauern. 100% kostenlos und ohne Anmeldung.
+            </p>
+            <Link href="/virtueller-stromzaehler" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-sm shadow-brand-500/20 hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all text-lg">
+              Jetzt Haushalt simulieren
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </Link>
+          </div>
+        </section>
+
       </main>
 
       <footer className="border-t border-slate-200 bg-white py-10 mt-auto">
@@ -132,6 +145,7 @@ export default async function Home() {
           <div className="flex gap-4">
             <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
             <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
+            <Link href="/virtueller-stromzaehler" className="hover:text-brand-600 transition-colors">Virtueller Stromzähler</Link>
             <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
             <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
           </div>

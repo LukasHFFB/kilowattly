@@ -180,11 +180,12 @@ export default function StromzaehlerApp({
         };
     }, [devices, priceCents]);
 
-    const barData = useMemo(() => [
-        { name: 'Pro Tag', Kosten: totals.dailyEuro },
-        { name: 'Pro Monat', Kosten: totals.monthlyEuro },
-        { name: 'Pro Jahr', Kosten: totals.yearlyEuro },
-    ], [totals]);
+    const barData = useMemo(() => {
+        return totals.breakdownData.slice(0, 5).map(item => ({
+            name: item.name,
+            Kosten: item.value
+        }));
+    }, [totals]);
 
 
     // Avoid hydration mismatch for Recharts formatting
@@ -277,7 +278,7 @@ export default function StromzaehlerApp({
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
 
-                                <div className="flex-grow flex items-center pr-10 sm:pr-0">
+                                <div className="flex-grow flex items-center pr-10 sm:pr-0 min-w-0">
                                     <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 mr-4 shrink-0">
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                                     </div>
@@ -414,37 +415,45 @@ export default function StromzaehlerApp({
                     )}
                 </div>
 
-                {/* Bar Chart: Time periods */}
+                {/* Bar Chart: Top Appliances */}
                 <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                     <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
                         <svg className="w-5 h-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                        Gesamtkosten im Überblick
+                        Top 5 Jahreskosten
                     </h3>
                     <div className="h-48 w-full -ml-4">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={barData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#64748b', fontSize: 13, fontWeight: 500 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#94a3b8', fontSize: 13 }}
-                                    tickFormatter={(value) => `€${value}`}
-                                />
-                                <RechartsTooltip
-                                    formatter={((value: any) => [`€${Number(value).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 'Stromkosten']) as any}
-                                    cursor={{ fill: '#f8fafc' }}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Bar dataKey="Kosten" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={60} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {devices.length > 0 && totals.yearlyEuro > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={barData} layout="vertical" margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                                    <XAxis
+                                        type="number"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#94a3b8', fontSize: 13 }}
+                                        tickFormatter={(value) => `€${value}`}
+                                    />
+                                    <YAxis
+                                        type="category"
+                                        dataKey="name"
+                                        width={100}
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
+                                    />
+                                    <RechartsTooltip
+                                        formatter={((value: any) => [`€${Number(value).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 'Stromkosten/Jahr']) as any}
+                                        cursor={{ fill: '#f8fafc' }}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                    <Bar dataKey="Kosten" fill="#10b981" radius={[0, 4, 4, 0]} maxBarSize={30} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex items-center justify-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200 ml-4">
+                                Fügen Sie Geräte hinzu.
+                            </div>
+                        )}
                     </div>
                 </div>
 
