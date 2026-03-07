@@ -17,6 +17,7 @@ type Props = {
     defaultWattage: number;
     defaultHours: number;
     defaultPrice: number;
+    priceUpdateDate: string;
     comparisons: ComparisonDevice[];
 };
 
@@ -24,7 +25,7 @@ function computeAnnualCost(watt: number, hours: number, priceCents: number) {
     return Math.round((watt * hours * 365) / 1000 * (priceCents / 100));
 }
 
-export default function CalculatorSection({ deviceName, defaultWattage, defaultHours, defaultPrice, comparisons }: Props) {
+export default function CalculatorSection({ deviceName, defaultWattage, defaultHours, defaultPrice, priceUpdateDate, comparisons }: Props) {
     const [liveValues, setLiveValues] = useState({
         watt: defaultWattage,
         hours: defaultHours,
@@ -50,6 +51,7 @@ export default function CalculatorSection({ deviceName, defaultWattage, defaultH
                 defaultHours={defaultHours}
                 defaultPrice={defaultPrice}
                 deviceName={deviceName}
+                priceUpdateDate={priceUpdateDate}
                 onValuesChange={handleValuesChange}
             />
 

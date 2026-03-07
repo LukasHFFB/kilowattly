@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-export default function CalculatorWidget({ defaultWattage, defaultHours, defaultPrice, deviceName, onValuesChange }: any) {
+export default function CalculatorWidget({ defaultWattage, defaultHours, defaultPrice, deviceName, priceUpdateDate, onValuesChange }: any) {
     const [watt, setWatt] = useState(defaultWattage);
     const [hours, setHours] = useState(defaultHours);
     const [price, setPrice] = useState(defaultPrice);
@@ -149,7 +149,7 @@ export default function CalculatorWidget({ defaultWattage, defaultHours, default
                             <tr className="hover:bg-slate-50/50 transition-colors">
                                 <td className="px-6 py-4 font-medium text-slate-900">Strompreis</td>
                                 <td className="px-6 py-4"><span className="bg-brand-50 text-brand-600 font-bold px-2 py-1 rounded-md">{defaultPrice} ct/kWh</span></td>
-                                <td className="px-6 py-4">Aktueller Durchschnittswert</td>
+                                <td className="px-6 py-4">Aktueller Durchschnittswert (Stand {priceUpdateDate})</td>
                             </tr>
                         </tbody>
                     </table>
