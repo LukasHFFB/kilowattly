@@ -17,7 +17,7 @@ const WELL_KNOWN = ['Kühlschrank', 'Waschmaschine', 'Fernseher', 'Staubsauger',
 const computeAnnualCost = (c: { default_wattage: number; average_daily_usage_hours: number; price_cents: number }) =>
     Math.round((c.default_wattage * c.average_daily_usage_hours * 365) / 1000 * (c.price_cents / 100));
 
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
     try {
         const { slug } = await params;
 
