@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import prisma from '@/lib/prisma';
 
-export const runtime = 'edge';
+// 1200x630 is the standard OG image size
 
 // We want the image to be 1200x630 (standard OG image size)
 export const alt = 'Stromkosten im Vergleich';
