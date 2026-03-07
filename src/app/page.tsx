@@ -45,7 +45,7 @@ export default async function Home() {
           {/* Decorative Blue Gradient Blobs */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/4 w-[500px] h-[500px] bg-brand-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-          <div className="relative z-10 max-w-3xl mx-auto">
+          <div className="relative z-20 max-w-3xl mx-auto">
             <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
               <span className="text-brand-600">Stromkosten</span> &amp; Stromverbrauch berechnen
             </h1>
@@ -68,7 +68,7 @@ export default async function Home() {
         </section>
 
         {/* POPULAR CALCULATORS GRID */}
-        <section className="relative z-10 bg-transparent">
+        <section className="relative bg-transparent">
           <h2 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-2">
             <svg className="w-6 h-6 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
