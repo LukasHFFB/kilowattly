@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import CalculatorWidget from './CalculatorWidget';
 import FaqWidget from './FaqWidget';
+import CostComparisonChart from './CostComparisonChart';
+import CostOverTimeChart from './CostOverTimeChart';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,6 +124,37 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                     defaultPrice={calculator.price_cents}
                     deviceName={calculator.deviceName}
                 />
+
+                {/* Charts Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
+                    <section className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                        <h2 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <svg className="w-5 h-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                            Stromkosten {calculator.deviceName} im Vergleich
+                        </h2>
+                        <p className="text-sm text-slate-500 mb-5">Jährliche Stromkosten im Vergleich zu gängigen Haushaltsgeräten</p>
+                        <CostComparisonChart
+                            deviceName={calculator.deviceName}
+                            watt={calculator.default_wattage}
+                            hoursPerDay={calculator.average_daily_usage_hours}
+                            priceCents={calculator.price_cents}
+                        />
+                    </section>
+
+                    <section className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                        <h2 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <svg className="w-5 h-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                            Stromkosten {calculator.deviceName} über 5 Jahre
+                        </h2>
+                        <p className="text-sm text-slate-500 mb-5">Kumulative Stromkosten bei gleichbleibender Nutzung</p>
+                        <CostOverTimeChart
+                            deviceName={calculator.deviceName}
+                            watt={calculator.default_wattage}
+                            hoursPerDay={calculator.average_daily_usage_hours}
+                            priceCents={calculator.price_cents}
+                        />
+                    </section>
+                </div>
 
                 <section className="mb-16 bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
                     <article
