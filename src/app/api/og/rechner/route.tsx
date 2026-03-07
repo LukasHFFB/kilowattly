@@ -1,8 +1,6 @@
 import { ImageResponse } from 'next/og';
-import prisma from '@/lib/prisma';
 
-export const runtime = 'nodejs';
-// 1200x630 is the standard OG image size
+export const runtime = 'edge';
 
 // We want the image to be 1200x630 (standard OG image size)
 export const alt = 'Stromkosten im Vergleich';
@@ -13,51 +11,38 @@ export const size = {
 
 export const contentType = 'image/png';
 
-const WELL_KNOWN = ['Kühlschrank', 'Waschmaschine', 'Fernseher', 'Staubsauger', 'WLAN-Router', 'Geschirrspüler'];
-
-const computeAnnualCost = (c: { default_wattage: number; average_daily_usage_hours: number; price_cents: number }) =>
-    Math.round((c.default_wattage * c.average_daily_usage_hours * 365) / 1000 * (c.price_cents / 100));
-
-export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(request: Request) {
     try {
-        const { slug } = await params;
+        const { searchParams } = new URL(request.url);
 
-        const calculator = await prisma.calculator.findUnique({
-            where: { slug, status: 'PUBLISHED' },
-        });
+        const name = searchParams.get('name') || 'Gerät';
 
-        if (!calculator) {
-            return new Response('Not found', { status: 404 });
+        const costStr = searchParams.get('cost');
+        if (!costStr) {
+            return new Response('Missing cost parameter', { status: 400 });
+        }
+        const currentAnnualCost = parseInt(costStr, 10);
+
+        const compsStr = searchParams.get('comps');
+        let comparisonDevices: Array<{ n: string; c: number }> = [];
+        if (compsStr) {
+            try {
+                comparisonDevices = JSON.parse(compsStr);
+            } catch (e) {
+                console.error('Failed to parse comps query param', e);
+            }
         }
 
-        // Fetch other top calculators to show on the bar chart
-        const allOtherCalculators = await prisma.calculator.findMany({
-            where: { status: 'PUBLISHED', slug: { not: slug } },
-            select: { deviceName: true, default_wattage: true, average_daily_usage_hours: true, price_cents: true },
-        });
-
-        const currentAnnualCost = computeAnnualCost(calculator);
-
-        const wellKnownMatches = allOtherCalculators.filter((c) =>
-            WELL_KNOWN.some((name) => c.deviceName.toLowerCase().includes(name.toLowerCase()))
-        );
-        const otherCalcs = allOtherCalculators.filter((c) =>
-            !WELL_KNOWN.some((name) => c.deviceName.toLowerCase().includes(name.toLowerCase()))
-        );
-        const comparisonPool = [...wellKnownMatches, ...otherCalcs];
-
-        const comparisonDevices = comparisonPool.slice(0, 4).map((c) => ({
-            name: c.deviceName,
-            cost: computeAnnualCost(c),
-            isCurrent: false,
-        }));
-
         const data = [
-            { name: calculator.deviceName, cost: currentAnnualCost, isCurrent: true },
-            ...comparisonDevices,
+            { name: name, cost: currentAnnualCost, isCurrent: true },
+            ...comparisonDevices.map((c) => ({
+                name: c.n,
+                cost: c.c,
+                isCurrent: false,
+            })),
         ].sort((a, b) => b.cost - a.cost);
 
-        const maxCost = Math.max(...data.map((d) => d.cost));
+        const maxCost = Math.max(...data.map((d) => d.cost), 1);
 
         return new ImageResponse(
             (
@@ -87,7 +72,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
                                 letterSpacing: '-0.02em',
                             }}
                         >
-                            Stromkosten <span style={{ color: '#2563eb', marginLeft: 12 }}>{calculator.deviceName}</span>
+                            Stromkosten <span style={{ color: '#2563eb', marginLeft: 12 }}>{name}</span>
                         </div>
                     </div>
 

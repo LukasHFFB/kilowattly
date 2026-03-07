@@ -15,7 +15,28 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const device = calculator.deviceName;
     const watt = calculator.default_wattage;
 
-    const ogUrl = `https://www.kilowattly.de/api/og/rechner/${slug}`;
+    const currentCost = Math.round((calculator.default_wattage * calculator.average_daily_usage_hours * 365) / 1000 * (calculator.price_cents / 100));
+
+    const allOtherCalculators = await prisma.calculator.findMany({
+        where: { status: 'PUBLISHED', slug: { not: slug } },
+        select: { deviceName: true, default_wattage: true, average_daily_usage_hours: true, price_cents: true },
+    });
+
+    const WELL_KNOWN = ['Kühlschrank', 'Waschmaschine', 'Fernseher', 'Staubsauger', 'WLAN-Router', 'Geschirrspüler'];
+    const wellKnownMatches = allOtherCalculators.filter((c) =>
+        WELL_KNOWN.some((name) => c.deviceName.toLowerCase().includes(name.toLowerCase()))
+    );
+    const otherCalcs = allOtherCalculators.filter((c) =>
+        !WELL_KNOWN.some((name) => c.deviceName.toLowerCase().includes(name.toLowerCase()))
+    );
+    const comparisonPool = [...wellKnownMatches, ...otherCalcs];
+
+    const ogComparisons = comparisonPool.slice(0, 4).map((c) => ({
+        n: c.deviceName,
+        c: Math.round((c.default_wattage * c.average_daily_usage_hours * 365) / 1000 * (c.price_cents / 100)),
+    }));
+
+    const ogUrl = `https://www.kilowattly.de/api/og/rechner?name=${encodeURIComponent(device)}&cost=${currentCost}&comps=${encodeURIComponent(JSON.stringify(ogComparisons))}`;
 
     return {
         title: `${device}: Stromverbrauch & Stromkosten berechnen (${year}) | kilowattly`,
@@ -88,6 +109,13 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
         hoursPerDay: c.average_daily_usage_hours,
         priceCents: c.price_cents,
     }));
+
+    const currentCost = Math.round((calculator.default_wattage * calculator.average_daily_usage_hours * 365) / 1000 * (calculator.price_cents / 100));
+    const ogComparisons = comparisonDevices.slice(0, 4).map((c) => ({
+        n: c.name,
+        c: Math.round((c.watt * c.hoursPerDay * 365) / 1000 * (c.priceCents / 100)),
+    }));
+    const ogUrl = `/api/og/rechner?name=${encodeURIComponent(calculator.deviceName)}&cost=${currentCost}&comps=${encodeURIComponent(JSON.stringify(ogComparisons))}`;
 
     // JSON-LD BreadcrumbList for schema.org structured data
     const breadcrumbJsonLd = {
@@ -185,7 +213,7 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
                     {/* Embedded OG Image Infographic */}
                     <div className="mb-10 -mx-8 sm:-mx-10 mt-[-2rem] sm:mt-[-2.5rem] border-b border-slate-100">
                         <img
-                            src={`/api/og/rechner/${slug}`}
+                            src={ogUrl}
                             alt={`Infografik: Stromkosten ${calculator.deviceName} im Jahresvergleich`}
                             className="w-full h-auto object-cover"
                             loading="lazy"
