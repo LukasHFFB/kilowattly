@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-export default function CalculatorWidget({ defaultWattage, defaultHours, defaultPrice, deviceName }: any) {
+export default function CalculatorWidget({ defaultWattage, defaultHours, defaultPrice, deviceName, onValuesChange }: any) {
     const [watt, setWatt] = useState(defaultWattage);
     const [hours, setHours] = useState(defaultHours);
     const [price, setPrice] = useState(defaultPrice);
@@ -26,7 +26,11 @@ export default function CalculatorWidget({ defaultWattage, defaultHours, default
             costYear: costPerYear,
             costMonth: costPerMonth
         });
-    }, [watt, hours, price]);
+
+        if (onValuesChange) {
+            onValuesChange({ watt, hours, price });
+        }
+    }, [watt, hours, price, onValuesChange]);
 
     const currencyFormatter = new Intl.NumberFormat('de-DE', {
         style: 'currency',

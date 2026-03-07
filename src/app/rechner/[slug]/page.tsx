@@ -1,10 +1,8 @@
 import { notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import CalculatorWidget from './CalculatorWidget';
 import FaqWidget from './FaqWidget';
-import CostComparisonChart from './CostComparisonChart';
-import CostOverTimeChart from './CostOverTimeChart';
+import CalculatorSection from './CalculatorSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,10 +57,6 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
     // Build comparison chart data from real DB values:
     // Try to find well-known household devices first, fill with others if needed
     const WELL_KNOWN = ['Kühlschrank', 'Waschmaschine', 'Fernseher', 'Staubsauger', 'WLAN-Router', 'Geschirrspüler'];
-    const computeAnnualCost = (c: { default_wattage: number; average_daily_usage_hours: number; price_cents: number }) =>
-        Math.round((c.default_wattage * c.average_daily_usage_hours * 365) / 1000 * (c.price_cents / 100));
-
-    const currentAnnualCost = computeAnnualCost(calculator);
 
     // Pick well-known ones first, then fill from the rest
     const wellKnownMatches = allOtherCalculators.filter((c) =>
@@ -72,9 +66,11 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
         !WELL_KNOWN.some((name) => c.deviceName.toLowerCase().includes(name.toLowerCase()))
     );
     const comparisonPool = [...wellKnownMatches, ...otherCalcs];
-    const comparisonDevices = comparisonPool.slice(0, 3).map((c) => ({
+    const comparisonDevices = comparisonPool.slice(0, 5).map((c) => ({
         name: c.deviceName,
-        annualCost: computeAnnualCost(c),
+        watt: c.default_wattage,
+        hoursPerDay: c.average_daily_usage_hours,
+        priceCents: c.price_cents,
     }));
 
     // JSON-LD BreadcrumbList for schema.org structured data
@@ -139,42 +135,13 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                     </p>
                 </section>
 
-                <CalculatorWidget
+                <CalculatorSection
+                    deviceName={calculator.deviceName}
                     defaultWattage={calculator.default_wattage}
                     defaultHours={calculator.average_daily_usage_hours}
                     defaultPrice={calculator.price_cents}
-                    deviceName={calculator.deviceName}
+                    comparisons={comparisonDevices}
                 />
-
-                {/* Charts Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
-                    <section className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
-                        <h2 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">
-                            <svg className="w-5 h-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                            Stromkosten {calculator.deviceName} im Vergleich
-                        </h2>
-                        <p className="text-sm text-slate-500 mb-5">Jährliche Stromkosten im Vergleich zu gängigen Haushaltsgeräten</p>
-                        <CostComparisonChart
-                            deviceName={calculator.deviceName}
-                            annualCost={currentAnnualCost}
-                            comparisons={comparisonDevices}
-                        />
-                    </section>
-
-                    <section className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
-                        <h2 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">
-                            <svg className="w-5 h-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                            Stromkosten {calculator.deviceName} über 5 Jahre
-                        </h2>
-                        <p className="text-sm text-slate-500 mb-5">Kumulative Stromkosten bei gleichbleibender Nutzung</p>
-                        <CostOverTimeChart
-                            deviceName={calculator.deviceName}
-                            watt={calculator.default_wattage}
-                            hoursPerDay={calculator.average_daily_usage_hours}
-                            priceCents={calculator.price_cents}
-                        />
-                    </section>
-                </div>
 
                 <section className="mb-16 bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
                     <article
