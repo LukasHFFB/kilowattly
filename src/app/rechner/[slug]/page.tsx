@@ -149,10 +149,7 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                 </nav>
             </header>
 
-            {/* Hidden OG Image for Google Image Indexing */}
-            <figure className="hidden" aria-hidden="true">
-                <img src={`/api/og/rechner/${slug}`} alt={`Infografik: Jährliche Stromkosten von einem ${calculator.deviceName} im Vergleich mit anderen Haushaltsgeräten`} loading="eager" />
-            </figure>
+            {/* Remove hidden figure since we now show it inline */}
 
             <main className="max-w-4xl mx-auto px-6 pb-24 flex-grow w-full">
 
@@ -184,7 +181,19 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                     comparisons={comparisonDevices}
                 />
 
-                <section className="mb-16 bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm">
+                <section className="mb-16 bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    {/* Embedded OG Image Infographic */}
+                    <div className="mb-10 -mx-8 sm:-mx-10 mt-[-2rem] sm:mt-[-2.5rem] border-b border-slate-100">
+                        <img
+                            src={`/api/og/rechner/${slug}`}
+                            alt={`Infografik: Stromkosten ${calculator.deviceName} im Jahresvergleich`}
+                            className="w-full h-auto object-cover"
+                            loading="lazy"
+                            width={1200}
+                            height={630}
+                        />
+                    </div>
+
                     <article
                         className="max-w-3xl text-slate-700 leading-relaxed prose prose-brand prose-headings:text-slate-900 prose-h2:text-2xl prose-h2:font-bold prose-h2:mb-6 prose-p:mb-5 prose-h3:text-xl prose-h3:font-bold prose-h3:mt-8 prose-h3:mb-4 prose-ul:list-disc prose-ul:pl-5 prose-ul:mb-6 prose-ul:space-y-2 prose-strong:text-slate-900"
                         dangerouslySetInnerHTML={{ __html: calculator.seo_content }}

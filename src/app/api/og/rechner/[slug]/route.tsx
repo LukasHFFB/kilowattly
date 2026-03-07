@@ -154,6 +154,9 @@ export async function GET(request: Request, { params }: { params: { slug: string
             ),
             {
                 ...size,
+                headers: {
+                    'Cache-Control': 'public, max-age=604800, stale-while-revalidate=2592000',
+                },
             }
         );
     } catch (e) {
