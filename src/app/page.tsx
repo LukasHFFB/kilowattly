@@ -79,7 +79,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {popularCalculators.length === 0 ? (
               <div className="col-span-full border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center text-slate-500">
-                Es sind noch keine Rechner verfügbar. Bitte fügen Sie via Admin-Dashboard neue Geräte hinzu.
+                Es sind noch keine Rechner verfügbar. Bitte schauen Sie später wieder vorbei.
               </div>
             ) : null}
             {popularCalculators.map((calc: any) => (

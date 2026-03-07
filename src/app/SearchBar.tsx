@@ -99,7 +99,7 @@ export default function SearchBar() {
                         <div className="p-4 text-center text-slate-400 text-sm">Suche...</div>
                     ) : results.length === 0 ? (
                         <div className="p-4 text-center text-slate-400 text-sm">
-                            Kein Rechner für &quot;{query}&quot; gefunden. Du kannst dieses Keyword im Admin-Dashboard hinzufügen!
+                            Kein Rechner für &quot;{query}&quot; gefunden. Versuchen Sie einen anderen Suchbegriff.
                         </div>
                     ) : (
                         <ul>
