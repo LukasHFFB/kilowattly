@@ -22,6 +22,12 @@ export default async function Home() {
     popularCalculators.push(allCalculators[(offset + i) % total]);
   }
 
+  // Pick 4 calculators for the "Trending" tags, offset slightly so they are different from the popular grid
+  const trendingCalculators = [];
+  for (let i = 0; i < Math.min(4, total); i++) {
+    trendingCalculators.push(allCalculators[(offset + i + 6) % total]);
+  }
+
   return (
     <>
       {/* Header */}
@@ -68,10 +74,11 @@ export default async function Home() {
             {/* Trending Tags */}
             <div className="mt-6 flex flex-wrap justify-center gap-2 text-sm">
               <span className="text-slate-500 font-medium pt-1">Oft gesucht:</span>
-              <Link href="/rechner/klimaanlage" className="text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1 rounded-full font-semibold transition-colors">Klimaanlage</Link>
-              <Link href="/rechner/waermepumpe" className="text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1 rounded-full font-semibold transition-colors">Wärmepumpe</Link>
-              <Link href="/rechner/aquarium" className="text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1 rounded-full font-semibold transition-colors">Aquarium</Link>
-              <Link href="/rechner/e-bike-akku" className="text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1 rounded-full font-semibold transition-colors">E-Bike Akku</Link>
+              {trendingCalculators.map((calc: any) => (
+                <Link key={calc.id} href={`/rechner/${calc.slug}`} className="text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1 rounded-full font-semibold transition-colors">
+                  {calc.deviceName}
+                </Link>
+              ))}
             </div>
           </div>
         </section>

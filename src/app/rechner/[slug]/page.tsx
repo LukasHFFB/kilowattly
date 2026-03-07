@@ -146,7 +146,7 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
             {
                 '@type': 'ListItem',
                 position: 2,
-                name: `${calculator.deviceName} Stromkosten`,
+                name: `${calculator.deviceName} Stromverbrauch & Stromkosten`,
                 item: `https://www.kilowattly.de/rechner/${slug}`,
             },
         ],
@@ -221,7 +221,7 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
                     <ol className="flex items-center gap-1.5">
                         <li><Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link></li>
                         <li className="text-slate-300">/</li>
-                        <li className="text-slate-800 font-medium">{calculator.deviceName} Stromkosten</li>
+                        <li className="text-slate-800 font-medium">{calculator.deviceName} Stromverbrauch & Stromkosten</li>
                     </ol>
                 </nav>
 
