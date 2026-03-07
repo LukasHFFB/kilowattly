@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import SearchBar from './SearchBar';
-import { GLOBAL_ELECTRICITY_PRICE_CENTS, getElectricityPriceUpdateDate } from '@/lib/pricing';
+import { getGlobalElectricityPrice, getElectricityPriceUpdateDate } from '@/lib/pricing';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,7 +61,7 @@ export default async function Home() {
             <div className="mt-8 flex justify-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm text-sm font-medium text-slate-600">
                 <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
-                Aktueller Strompreis (Stand {getElectricityPriceUpdateDate().formattedDate}): <strong className="text-slate-900">{GLOBAL_ELECTRICITY_PRICE_CENTS} ct/kWh</strong>
+                Aktueller Strompreis (Stand {getElectricityPriceUpdateDate().formattedDate}): <strong className="text-slate-900">{getGlobalElectricityPrice()} ct/kWh</strong>
               </div>
             </div>
 

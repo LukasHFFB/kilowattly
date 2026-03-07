@@ -4,7 +4,7 @@ import Link from 'next/link';
 import FaqWidget from './FaqWidget';
 import CalculatorSection from './CalculatorSection';
 import ShareInfographic from './ShareInfographic';
-import { GLOBAL_ELECTRICITY_PRICE_CENTS, getElectricityPriceUpdateDate } from '@/lib/pricing';
+import { getGlobalElectricityPrice, getElectricityPriceUpdateDate } from '@/lib/pricing';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const device = calculator.deviceName;
     const watt = calculator.default_wattage;
 
-    const currentCost = Math.round((calculator.default_wattage * calculator.average_daily_usage_hours * 365) / 1000 * (GLOBAL_ELECTRICITY_PRICE_CENTS / 100));
+    const currentCost = Math.round((calculator.default_wattage * calculator.average_daily_usage_hours * 365) / 1000 * (getGlobalElectricityPrice() / 100));
 
     const allOtherCalculators = await prisma.calculator.findMany({
         where: { status: 'PUBLISHED', slug: { not: slug } },
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     const ogComparisons = comparisonPool.slice(0, 4).map((c) => ({
         n: c.deviceName,
-        c: Math.round((c.default_wattage * c.average_daily_usage_hours * 365) / 1000 * (GLOBAL_ELECTRICITY_PRICE_CENTS / 100)),
+        c: Math.round((c.default_wattage * c.average_daily_usage_hours * 365) / 1000 * (getGlobalElectricityPrice() / 100)),
     }));
 
     const ogUrl = `https://www.kilowattly.de/api/og/rechner?name=${encodeURIComponent(device)}&cost=${currentCost}&comps=${encodeURIComponent(JSON.stringify(ogComparisons))}&v=2`;
@@ -111,13 +111,13 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
         name: c.deviceName,
         watt: c.default_wattage,
         hoursPerDay: c.average_daily_usage_hours,
-        priceCents: GLOBAL_ELECTRICITY_PRICE_CENTS,
+        priceCents: getGlobalElectricityPrice(),
     }));
 
-    const currentCost = Math.round((calculator.default_wattage * calculator.average_daily_usage_hours * 365) / 1000 * (GLOBAL_ELECTRICITY_PRICE_CENTS / 100));
+    const currentCost = Math.round((calculator.default_wattage * calculator.average_daily_usage_hours * 365) / 1000 * (getGlobalElectricityPrice() / 100));
     const ogComparisons = comparisonDevices.slice(0, 4).map((c) => ({
         n: c.name,
-        c: Math.round((c.watt * c.hoursPerDay * 365) / 1000 * (GLOBAL_ELECTRICITY_PRICE_CENTS / 100)),
+        c: Math.round((c.watt * c.hoursPerDay * 365) / 1000 * (getGlobalElectricityPrice() / 100)),
     }));
     const ogUrl = `/api/og/rechner?name=${encodeURIComponent(calculator.deviceName)}&cost=${currentCost}&comps=${encodeURIComponent(JSON.stringify(ogComparisons))}&v=2`;
 
@@ -209,7 +209,7 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
                     deviceName={calculator.deviceName}
                     defaultWattage={calculator.default_wattage}
                     defaultHours={calculator.average_daily_usage_hours}
-                    defaultPrice={GLOBAL_ELECTRICITY_PRICE_CENTS}
+                    defaultPrice={getGlobalElectricityPrice()}
                     priceUpdateDate={getElectricityPriceUpdateDate().formattedDate}
                     comparisons={comparisonDevices}
                 />
