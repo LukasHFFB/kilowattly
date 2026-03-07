@@ -15,9 +15,25 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     const device = calculator.deviceName;
     const watt = calculator.default_wattage;
 
+    const ogUrl = `https://www.kilowattly.de/api/og/rechner/${slug}`;
+
     return {
         title: `${device}: Stromverbrauch & Stromkosten berechnen (${year}) | kilowattly`,
         description: `Was kostet ein ${device} (${watt} W) an Strom pro Monat & Jahr? ⚡ Berechnen Sie jetzt Stromkosten, kWh-Jahresverbrauch & Sparpotenzial — kostenloser Rechner mit Spartipps.`,
+        openGraph: {
+            images: [
+                {
+                    url: ogUrl,
+                    width: 1200,
+                    height: 630,
+                    alt: `Infografik: Stromkosten ${device} im Vergleich`,
+                },
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            images: [ogUrl],
+        },
     };
 }
 
@@ -132,6 +148,11 @@ export default async function CalculatorPage({ params }: { params: { slug: strin
                     <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
                 </nav>
             </header>
+
+            {/* Hidden OG Image for Google Image Indexing */}
+            <figure className="hidden" aria-hidden="true">
+                <img src={`/api/og/rechner/${slug}`} alt={`Infografik: Jährliche Stromkosten von einem ${calculator.deviceName} im Vergleich mit anderen Haushaltsgeräten`} loading="eager" />
+            </figure>
 
             <main className="max-w-4xl mx-auto px-6 pb-24 flex-grow w-full">
 
