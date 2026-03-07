@@ -94,7 +94,7 @@ export default function SearchBar() {
 
             {/* Dropdown Results */}
             {isOpen && (
-                <div className="absolute z-50 top-full mt-2 w-full bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+                <div className="absolute z-50 top-full mt-2 w-full bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden max-h-80 overflow-y-auto">
                     {isLoading ? (
                         <div className="p-4 text-center text-slate-400 text-sm">Suche...</div>
                     ) : results.length === 0 ? (
