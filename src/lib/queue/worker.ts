@@ -16,7 +16,8 @@ export const worker = new Worker(
         }
 
         // 2. Generate Content
-        const content = await generateSeoContent(keyword, logic.device_name);
+        // We now pass the original keyword as the deviceName since the user guarantees they match.
+        const content = await generateSeoContent(keyword, keyword);
         if (!content) {
             throw new Error('Failed to generate content');
         }
@@ -28,13 +29,13 @@ export const worker = new Worker(
             create: { name: logic.category },
         });
 
-        const slug = logic.device_name.toLowerCase().replace(/[^a-z0-9äöüß]+/g, '-').replace(/(^-|-$)+/g, '');
+        const slug = keyword.toLowerCase().replace(/[^a-z0-9äöüß]+/g, '-').replace(/(^-|-$)+/g, '');
 
         const calculator = await prisma.calculator.upsert({
             where: { slug },
             update: {
                 keyword,
-                deviceName: logic.device_name,
+                deviceName: keyword,
                 default_wattage: logic.default_wattage,
                 average_daily_usage_hours: logic.average_daily_usage_hours,
                 seo_content: content.seo_content,
@@ -45,7 +46,7 @@ export const worker = new Worker(
             create: {
                 slug,
                 keyword,
-                deviceName: logic.device_name,
+                deviceName: keyword,
                 default_wattage: logic.default_wattage,
                 average_daily_usage_hours: logic.average_daily_usage_hours,
                 seo_content: content.seo_content,
@@ -55,7 +56,7 @@ export const worker = new Worker(
             },
         });
 
-        console.log(`Successfully processed and saved calculator: ${logic.device_name}`);
+        console.log(`Successfully processed and saved calculator: ${keyword}`);
         return calculator;
     },
     { connection: redisConnection as any }

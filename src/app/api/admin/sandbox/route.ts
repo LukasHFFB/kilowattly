@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         const logicEndTime = Date.now();
 
         const contentStartTime = Date.now();
-        const content = await generateSeoContent(keyword, logic.device_name);
+        const content = await generateSeoContent(keyword, keyword);
         const contentEndTime = Date.now();
 
         return NextResponse.json({

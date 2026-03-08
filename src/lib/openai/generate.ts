@@ -10,7 +10,6 @@ const openai = new OpenAI({
 });
 
 const LogicSchema = z.object({
-    device_name: z.string(),
     default_wattage: z.number(),
     average_daily_usage_hours: z.number(),
     category: z.string(),
@@ -21,7 +20,7 @@ export async function generateCalculatorLogic(keyword: string) {
 
     // Fetch custom prompt or use default
     const customPrompt = await prisma.systemPrompt.findUnique({ where: { id: 'LOGIC' } });
-    const systemInstruction = customPrompt?.template || 'You are an expert energy consultant. For the given search keyword, extract the canonical device name (in German), its default wattage (in Watts), average daily usage in hours, and a broad category (e.g. "Heizen", "Haushalt"). Understand context to give realistic power consumption metrics (e.g. a Gaming PC uses more than a laptop, a plasma TV more than LED). Return ONLY a valid JSON object matching exactly this structure with no markdown wrapping: {"device_name": "string", "default_wattage": 100, "average_daily_usage_hours": 2.5, "category": "Haushalt"}';
+    const systemInstruction = customPrompt?.template || 'You are an expert energy consultant. For the given search keyword, extract its default wattage (in Watts), average daily usage in hours, and a broad category (e.g. "Heizen", "Haushalt"). Understand context to give realistic power consumption metrics (e.g. a Gaming PC uses more than a laptop, a plasma TV more than LED). Return ONLY a valid JSON object matching exactly this structure with no markdown wrapping: {"default_wattage": 100, "average_daily_usage_hours": 2.5, "category": "Haushalt"}';
 
     const response = await openai.chat.completions.create({
         model: 'meta/llama-3.1-70b-instruct',

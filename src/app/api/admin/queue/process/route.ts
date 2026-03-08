@@ -23,7 +23,7 @@ export async function POST() {
         if (!logic) throw new Error('Failed to generate logic');
 
         // 2. Generate Content
-        const content = await generateSeoContent(keyword, logic.device_name);
+        const content = await generateSeoContent(keyword, keyword);
         if (!content) throw new Error('Failed to generate content');
 
         // 3. Save to Database
@@ -33,13 +33,13 @@ export async function POST() {
             create: { name: logic.category },
         });
 
-        const slug = slugify(logic.device_name);
+        const slug = slugify(keyword);
 
         await prisma.calculator.upsert({
             where: { slug },
             update: {
                 keyword,
-                deviceName: logic.device_name,
+                deviceName: keyword,
                 default_wattage: logic.default_wattage,
                 average_daily_usage_hours: logic.average_daily_usage_hours,
                 seo_content: content.seo_content,
@@ -50,7 +50,7 @@ export async function POST() {
             create: {
                 slug,
                 keyword,
-                deviceName: logic.device_name,
+                deviceName: keyword,
                 default_wattage: logic.default_wattage,
                 average_daily_usage_hours: logic.average_daily_usage_hours,
                 seo_content: content.seo_content,
