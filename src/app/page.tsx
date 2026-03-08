@@ -42,6 +42,7 @@ export default async function Home() {
           <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
           <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
           <Link href="/virtueller-stromzaehler" className="hover:text-brand-600 transition-colors">Virtueller Stromzähler</Link>
+          <Link href="/stromometer" className="hover:text-brand-600 transition-colors">Strom-o-meter Studie</Link>
           <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
         </nav>
       </header>
@@ -135,6 +136,26 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* STUDY: STROM-O-METER */}
+        <section className="mt-8 relative bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 overflow-hidden shadow-sm flex flex-col md:flex-row items-center gap-8 justify-between">
+          <div className="relative z-10 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-amber-200">
+              <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+              On-Site Studie
+            </div>
+            <h2 className="text-3xl font-extrabold text-slate-900 mb-4 tracking-tight">Das große <span className="text-brand-600 underline decoration-brand-300 underline-offset-4">Strom-o-meter</span></h2>
+            <p className="text-lg text-slate-600 leading-relaxed">
+              Wie viel Strom verbraucht Deutschland wirklich? Nehmen Sie völlig anonym an unserer großen Haushalts-Studie teil und vergleichen Sie Ihre eigene Jahresabrechnung sofort mit dem Bundesdurchschnitt.
+            </p>
+          </div>
+          <div className="shrink-0 relative z-10 w-full md:w-auto">
+            <Link href="/stromometer" className="inline-flex items-center justify-center w-full md:w-auto gap-2 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-sm hover:-translate-y-0.5 transition-all text-lg">
+              Jetzt anonym vergleichen
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </Link>
+          </div>
+        </section>
+
       </main>
 
       <footer className="border-t border-slate-200 bg-white py-10 mt-auto">
@@ -146,6 +167,7 @@ export default async function Home() {
             <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
             <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
             <Link href="/virtueller-stromzaehler" className="hover:text-brand-600 transition-colors">Virtueller Stromzähler</Link>
+            <Link href="/stromometer" className="hover:text-brand-600 transition-colors">Strom-o-meter</Link>
             <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
             <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
           </div>

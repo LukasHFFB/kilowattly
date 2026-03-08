@@ -44,3 +44,13 @@ model SystemPrompt {
   template  String   // The text of the prompt
   updatedAt DateTime @updatedAt
 }
+
+model StromometerSubmission {
+  id         String   @id @default(uuid())
+  persons    Int      // Number of people in the household
+  areaSqm    Int      // Living area in square meters
+  yearlyKwh  Int      // Annual power consumption
+  yearlyEuro Float    // Annual power cost
+  isSeed     Boolean  @default(false) // Flag to distinguish generated seed data from real user data
+  createdAt  DateTime @default(now())
+}

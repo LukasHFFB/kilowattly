@@ -209,6 +209,7 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
                     <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
                     <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
                     <Link href="/virtueller-stromzaehler" className="hover:text-brand-600 transition-colors">Virtueller Stromzähler</Link>
+                    <Link href="/stromometer" className="hover:text-brand-600 transition-colors">Strom-o-meter</Link>
                     <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
                 </nav>
             </header>
@@ -318,6 +319,7 @@ export default async function CalculatorPage({ params }: { params: Promise<{ slu
                         <Link href="/" className="hover:text-brand-600 transition-colors">Startseite</Link>
                         <Link href="/alle-rechner" className="hover:text-brand-600 transition-colors">Alle Rechner</Link>
                         <Link href="/virtueller-stromzaehler" className="hover:text-brand-600 transition-colors">Virtueller Stromzähler</Link>
+                        <Link href="/stromometer" className="hover:text-brand-600 transition-colors">Strom-o-meter</Link>
                         <Link href="/ueber-uns" className="hover:text-brand-600 transition-colors">Über uns</Link>
                         <Link href="/impressum" className="hover:text-brand-600 transition-colors">Impressum</Link>
                     </div>
