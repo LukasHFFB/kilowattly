@@ -1,0 +1,8 @@
+
+> kilowattly@0.1.0 build
+> prisma db push && next build
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+Error: The datasource.url property is required in your Prisma config file when using prisma db push.
